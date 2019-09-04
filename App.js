@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import React from 'react';
+import { StyleSheet, View, SafeAreaView } from 'react-native';
 import Header from './components/Header'
 import StartGameScreen from './screens/StartGameScreen'
 import GameScreen from './screens/GameScreen'
 import GameOverScreen from './screens/GameOverScreen'
 import * as Font from 'expo-font'
 import { AppLoading } from 'expo'
+
 
 export default class App extends React.Component {
   constructor(props){
@@ -59,10 +60,11 @@ export default class App extends React.Component {
       content = <GameOverScreen roundsNumber={this.state.guessRounds} userNumber={this.state.userNumber} onRestart={this.configureNewGameHandler} />
     }
     return (
-      <View style={styles.screen}>
+        <View style={styles.screen}>
         <Header title="Guess a number" />
         {content}
       </View>
+
     );
   }
 }

@@ -1,5 +1,5 @@
-import React, { useState} from 'react'
-import { StyleSheet, Text, View, Button, Keyboard, TouchableWithoutFeedback, Alert } from 'react-native';
+import React, { useState, useEffect} from 'react'
+import { StyleSheet, Text, View, Button, Keyboard, TouchableWithoutFeedback, Alert,Dimensions, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import Card from '../components/Card'
 import Input from '../components/Input'
 import Colors from '../instants/Colors'
@@ -10,10 +10,20 @@ const StartGameScreen = (props) => {
     const [EnteredValue, setEnteredValue] = useState('')
     const [confirmed, SetConfirmed] = useState(false)
     const [SelectedNumber, setSelectedNumber] = useState()
+    const [buttonWidth, setButtonWidth] = useState(Dimensions.get('window').width / 4)
     const restInputHandler = () => {
         setEnteredValue('')
         SetConfirmed(false)
     }
+    useEffect(() =>{
+        const updateLayout = () =>{
+            setButtonWidth(Dimensions.get('window').width / 4)
+        }
+        Dimensions.addEventListener('change',updateLayout)
+        return ()=> {
+            Dimensions.removeEventListener('change',updateLayout)
+        }
+    })
     const numberInputHandler = (inputValue) => {
         setEnteredValue(inputValue.replace(/[^0-9]/g, ''))
     }
@@ -37,14 +47,21 @@ const StartGameScreen = (props) => {
         </Card>
     }
     return (
-        <TouchableWithoutFeedback onPress={()=>{
+        <ScrollView>
+            <KeyboardAvoidingView behavior='position' keyboardVerticalOffset={30}>
+                <TouchableWithoutFeedback onPress={()=>{
             Keyboard.dismiss()
         }}>
+
             <View style={styles.screen}>
                 <Text style={styles.title} >{props.title}</Text>
                 <Card style={styles.inputContainer}>
                     <Text style={{ ...DefaultStyles.text }}>Select a number:</Text>
-                    <Input style={styles.input}
+                            <Input style={{ ...styles.input,
+                                            ...Platform.select({
+                                                ios: styles.inputOS,
+                                                android: styles.inputAndroid
+                                                })}}
                         blurOnSubmit
                         autoCorrect={false}
                         autoCapitalize='none'
@@ -54,13 +71,15 @@ const StartGameScreen = (props) => {
                         value={EnteredValue}
                     />
                     <View style={styles.buttonContainer}>
-                        <View style={styles.button}><Button title="Reset" onPress={restInputHandler} color={Colors.accent} /></View>
-                        <View style={styles.button}><Button title="Confirm" onPress={confirmInputHandler} color={Colors.primary} /></View>
+                        <View style={{buttonWidth}}><Button title="Reset" onPress={restInputHandler} color={Colors.accent} /></View>
+                        <View style={buttonWidth}><Button title="Confirm" onPress={confirmInputHandler} color={Colors.primary} /></View>
                     </View>
                 </Card>
                 {confirmOutput}
             </View>
         </TouchableWithoutFeedback>
+            </KeyboardAvoidingView>
+        </ScrollView>
     )
 }
 
@@ -71,8 +90,9 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     inputContainer:{
-        width: 300,
-        maxWidth: '80%',
+        width: '80%',
+        maxWidth: '95%',
+        minWidth: 300,
         alignItems: 'center'
     },
     buttonContainer:{
@@ -86,10 +106,13 @@ const styles = StyleSheet.create({
         marginVertical: 10
 
     },
+    /*
     button: {
-        width: 90
+       // width: 90
+        width: Dimensions.get('window').width / 4
+        //  width: ''40%'
 
-    },
+    },*/
     input:{
         width: 50,
         borderBottomWidth:1,
@@ -97,8 +120,15 @@ const styles = StyleSheet.create({
         marginBottom:10,
         textAlign:'center'
     },
+    inputOS:{
+        color: 'black',
+    },
+    inputAndroid:{
+        color: 'green',
+    },
     summaryContainer: {
         marginTop: 20,
+        marginBottom:80,
         alignItems: 'center'
     }
 })

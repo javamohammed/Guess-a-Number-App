@@ -1,5 +1,5 @@
 import React,{useState, useRef, useEffect} from 'react'
-import { StyleSheet, View, Alert,ScrollView } from 'react-native';
+import { StyleSheet, View, Alert,ScrollView,  Dimensions } from 'react-native';
 import NumberContainer from '../components/NumberContainer'
 import BodyText from '../components/BodyText'
 import MainButton from '../components/MainButton'
@@ -56,14 +56,15 @@ const GameScreen = (props) => {
                 <BodyText>{value}</BodyText>
             </View>)
     }
+    const Buttons = (<Card style={styles.buttonContainer}>
+                <MainButton  onPress={nextGuessHandler.bind(this,'lower') }><Ionicons name="md-remove" size={25} color='white'/></MainButton>
+                <MainButton  onPress={ nextGuessHandler.bind(this,'greater') }><Ionicons name="md-add" size={25} color='white'/></MainButton>
+            </Card>)
     return (
         <View style={styles.screen}>
             <BodyText>Opponent's Guess</BodyText>
             <NumberContainer> {currentGuess} </NumberContainer>
-            <Card style={styles.buttonContainer}>
-                <MainButton  onPress={nextGuessHandler.bind(this,'lower') }><Ionicons name="md-remove" size={25} color='white'/></MainButton>
-                <MainButton  onPress={ nextGuessHandler.bind(this,'greater') }><Ionicons name="md-add" size={25} color='white'/></MainButton>
-            </Card>
+            {Buttons}
             <View style={styles.list}>
                 <ScrollView>
                 {pastGuess.map( (guess, index) => {
@@ -75,7 +76,6 @@ const GameScreen = (props) => {
     )
 }
 
-
 const styles = StyleSheet.create({
     screen:{
         flex:1,
@@ -83,15 +83,15 @@ const styles = StyleSheet.create({
         alignItems:'center'
     },
     buttonContainer:{
-        flexDirection:'row',
-        justifyContent:'space-around',
-        marginTop:20,
-        width:400,
-        maxWidth:'90%'
+       flexDirection: 'row',
+        justifyContent: 'space-around',
+        marginTop: Dimensions.get('window').height > 600 ? 20 : 5,
+        width: 400,
+        maxWidth: '90%'
     },
     list:{
         flex:1,
-        width: '80%'
+        width: Dimensions.get('window').width > 350 ? '60%' : '80%',
     },
     listItems: {
         flexDirection:'row',
